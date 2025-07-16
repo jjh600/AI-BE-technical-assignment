@@ -392,3 +392,10 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,python,jupyternotebooks,visualstudiocode,pycharm,venv
+
+.idea
+postgresql/data/
+logs/
+*.env
+*.env.dev
+print_tree.py

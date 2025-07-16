@@ -1,0 +1,70 @@
+from typing import List, Literal
+from openai import OpenAI
+
+import logging
+
+from app.services.llm.templates import (
+    TEMPLATE_SYSTEM_PROMPT_EXPERIENCE,
+    TEMPLATE_SYSTEM_PROMPT_NEWS_FILTER,
+)
+
+logger = logging.getLogger(__name__)
+
+
+def call_openai_chat(
+    system_prompt: str,
+    user_prompt: str,
+    model: str = "gpt-4o",
+    temperature: float = 0.3,
+    max_tokens: int = 512,
+    parse_mode: Literal["list", "json", "raw"] = "list",
+    top_p: float = None,
+) -> List[str] | dict | str:
+    client = OpenAI()
+
+    try:
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("시스템 프롬프트:\n" + system_prompt)
+            logger.debug("유저 프롬프트:\n" + user_prompt)
+
+        kwargs = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "n": 1,
+        }
+        if top_p is not None:
+            kwargs["top_p"] = top_p
+
+        response = client.chat.completions.create(**kwargs)
+        output = response.choices[0].message.content.strip()
+        logger.debug("LLM 수행 결과: \n" + output)
+
+        if parse_mode == "json":
+            import json
+            return json.loads(output)
+
+        elif parse_mode == "list":
+
+            return [
+                line.strip("-•0123456789. ").strip()
+                for line in output.split("\n")
+                if line.strip()
+            ]
+
+        return output  # parse_mode == "raw"
+
+    except Exception as e:
+        logger.error(f"OpenAI 호출 실패: {e}\nPrompt: {user_prompt[:200]}")
+        return [] if parse_mode in ["list", "json"] else ""
+
+
+def infer_experiences_from_prompt(prompt: str) -> List[str]:
+    return call_openai_chat(TEMPLATE_SYSTEM_PROMPT_EXPERIENCE, prompt, parse_mode="list")
+
+def filter_relevant_news_from_prompt(prompt: str) -> List[str]:
+    return call_openai_chat(TEMPLATE_SYSTEM_PROMPT_NEWS_FILTER, prompt, parse_mode="list", temperature=0, top_p=0.1)
