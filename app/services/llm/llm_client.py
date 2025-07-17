@@ -3,10 +3,8 @@ from openai import OpenAI
 
 import logging
 
-from app.services.llm.templates import (
-    TEMPLATE_SYSTEM_PROMPT_EXPERIENCE,
-    TEMPLATE_SYSTEM_PROMPT_NEWS_FILTER,
-)
+from app.constants import DEFAULT_MODEL, DEFAULT_TEMPERATURE, MAX_TOKENS
+from app.services.llm.templates import TEMPLATE_SYSTEM_PROMPT_EXPERIENCE, TEMPLATE_SYSTEM_PROMPT_NEWS_FILTER
 
 logger = logging.getLogger(__name__)
 
@@ -14,12 +12,25 @@ logger = logging.getLogger(__name__)
 def call_openai_chat(
     system_prompt: str,
     user_prompt: str,
-    model: str = "gpt-4o",
-    temperature: float = 0.3,
-    max_tokens: int = 512,
+    model: str = DEFAULT_MODEL,
+    temperature: float = DEFAULT_TEMPERATURE,
+    max_tokens: int = MAX_TOKENS,
     parse_mode: Literal["list", "json", "raw"] = "list",
     top_p: float = None,
 ) -> List[str] | dict | str:
+    """
+    OpenAI ChatCompletion 호출 래퍼 함수
+
+    Args:
+        system_prompt (str): 시스템 메시지
+        user_prompt (str): 사용자 입력 메시지
+        model (str): 사용할 OpenAI 모델 이름
+        parse_mode (str): 출력 포맷 ('list', 'json', 'raw')
+
+    Returns:
+        List[str] | dict | str: LLM 응답 파싱 결과
+    """
+
     client = OpenAI()
 
     try:

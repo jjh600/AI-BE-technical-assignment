@@ -2,14 +2,14 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from unittest.mock import patch
-from app.schemas.rag import InferenceOutput
+from app.schemas.inference import ExperienceInferenceOutput
 
 client = TestClient(app)
 
-@patch("app.api.v1.rag.process_inference_pipeline")
-def test_rag_flow(mock_pipeline):
+@patch("app.api.v1.inference.run_experience_pipeline")
+def test_experience_flow(mock_pipeline):
     # 가짜 추론 결과
-    mock_pipeline.return_value = InferenceOutput(experiences=["리더쉽", "대규모 회사 경험"])
+    mock_pipeline.return_value = ExperienceInferenceOutput(experiences=["리더쉽", "대규모 회사 경험"])
 
     sample_input = {
         "headline": "백엔드 개발자",
@@ -28,7 +28,7 @@ def test_rag_flow(mock_pipeline):
         ]
     }
 
-    response = client.post("/api/v1/rag", json=sample_input)
+    response = client.post("/api/v1/inference/experience", json=sample_input)
 
     assert response.status_code == 200
     data = response.json()

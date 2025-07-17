@@ -6,7 +6,7 @@
 app/
 │   ├── api/
 │   │   └── v1/
-│   │       └── rag.py
+│   │       └── inference.py
 │   ├── config.py
 │   ├── constants.py
 │   ├── core/
@@ -16,7 +16,7 @@ app/
 │   │   └── vector_store.py
 │   ├── main.py
 │   ├── schemas/
-│   │   └── rag.py
+│   │   └── inference.py
 │   ├── services/
 │   │   ├── embedding/
 │   │   │   ├── embedding_batch.py
@@ -139,7 +139,7 @@ poetry run pytest tests/integration/
 
 ## 📬 주요 엔드포인트
 
-- `POST /api/v1/rag` : 이력 및 뉴스 기반 경험 추론 요청
+- `POST /api/v1/inference/experience` : 이력 및 뉴스 기반 경험 추론 요청
 
 ## 📌 RAG 구성 흐름
 
@@ -172,7 +172,7 @@ poetry run pytest tests/integration/
 ## 💬 기타
 ### 📡 API 호출 예시
 ```bash
-curl -X POST http://localhost/api/v1/rag \
+curl -X POST http://localhost/api/v1/inference/experience \
   -H "Content-Type: application/json" \
   -d @example_datas/talent_ex4.json
 ```

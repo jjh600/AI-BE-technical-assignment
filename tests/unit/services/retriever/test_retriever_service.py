@@ -2,9 +2,9 @@ import pytest
 from unittest.mock import patch
 
 from app.db.vector_store import build_similarity_query_parts
-from app.services.retriever.retriever_service import get_news_filters, retrieve_news_for_position
+from app.services.retriever.retriever_service import build_news_filters, retrieve_news_for_position
 
-from app.schemas.rag import Position, StartEndDate, PositionDate
+from app.schemas.inference import Position, StartEndDate, PositionDate
 
 def test_cosine_metric_query_parts():
     col = "embedding"
@@ -29,7 +29,7 @@ def test_invalid_metric_raises():
 
     assert "Unsupported metric" in str(exc_info.value)
 
-def test_get_news_filters_with_company_id():
+def test_build_news_filters_with_company_id():
     position = Position(
         companyName="네이버",
         title="백엔드 엔지니어",
@@ -43,13 +43,13 @@ def test_get_news_filters_with_company_id():
 
     company_map = {"네이버": 2}
 
-    filters = get_news_filters(position, company_map)
+    filters = build_news_filters(position, company_map)
 
     assert filters["news_date >="] == "2021-01-01"
     assert filters["news_date <="] == "2022-12-31"
     assert filters["company_id"] == 2
 
-def test_get_news_filters_without_company_id():
+def test_build_news_filters_without_company_id():
     position = Position(
         companyName="없는회사",
         title="직무",
@@ -62,14 +62,14 @@ def test_get_news_filters_without_company_id():
     )
     company_map = {"네이버": 2}
 
-    filters = get_news_filters(position, company_map)
+    filters = build_news_filters(position, company_map)
 
     assert "company_id" not in filters
     assert filters["news_date >="] == "2020-05-01"
     assert filters["news_date <="] == "2021-01-31"
 
 @patch("app.services.retriever.retriever_service.retrieve_similar_rows")
-@patch("app.services.retriever.retriever_service.get_news_filters")
+@patch("app.services.retriever.retriever_service.build_news_filters")
 @patch("app.services.retriever.retriever_service.generate_position_query_embedding")
 def test_retrieve_news_for_position(mock_embed, mock_filters, mock_similar_rows):
     # Mock 값 세팅

@@ -1,4 +1,10 @@
-MAX_TOP_K = 100
+# ================================
+# 🔍 벡터 검색 관련 설정
+# ================================
+
+MAX_TOP_K = 100  # 유사도 검색 시 최대 반환 개수
+FILTER_THRESHOLD_SCORE = 0.3  # 유사도 최소 허용 기준
+
 DISTANCE_METRICS = {
     "cosine": {
         "symbol": "<=>",
@@ -11,10 +17,23 @@ DISTANCE_METRICS = {
         "where_expr": "({col} <#> %s::vector) >= %s"
     }
 }
-
 DEFAULT_DISTANCE_METRIC = "cosine"
 
-FILTER_THRESHOLD_SCORE = 0.3
-TAG_LIST = [
-    "상위권대학교", "대규모 회사 경험", "리더쉽", "해외 경험", ...
-]
+EMBEDDING_COLUMN = "embedding"
+NEWS_TABLE = "company_news"
+
+
+# ================================
+# 🧠 LLM 관련 설정
+# ================================
+
+DEFAULT_MODEL = "gpt-4o"
+DEFAULT_TEMPERATURE = 0.3
+MAX_TOKENS = 512
+
+
+# ================================
+# ⚙️ 일반/공통 설정
+# ================================
+
+DEFAULT_POSITION_DESCRIPTION = "설명 없음"

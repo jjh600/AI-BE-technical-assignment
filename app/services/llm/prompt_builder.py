@@ -1,16 +1,16 @@
 from typing import List
-from app.schemas.rag import InferenceInput
+from app.schemas.inference import ExperienceInferenceInput, Position
 from app.utils.position_utils import normalize_position_description
 from app.services.llm.templates import (
-    TEMPLATE_TAG_INFERENCE_HEADER,
-    TEMPLATE_TAG_INFERENCE_CONDITIONS,
-    TEMPLATE_TAG_INFERENCE_TAGS,
-    TEMPLATE_TAG_INFERENCE_FORMAT_EXAMPLE,
+    TEMPLATE_EXPERIENCE_HEADER,
+    TEMPLATE_EXPERIENCE_CONDITIONS,
+    TEMPLATE_EXPERIENCE_TAGS,
+    TEMPLATE_EXPERIENCE_OUTPUT_FORMAT,
     TEMPLATE_NEWS_FILTER_CONDITIONS,
-    TEMPLATE_NEWS_FILTER_EXAMPLE,
+    TEMPLATE_NEWS_FILTER_OUTPUT_FORMAT,
 )
 
-def generate_fixed_tags_prompt(input_data: InferenceInput, news_per_position: List[List[str]]) -> str:
+def build_experience_tag_prompt(input_data: ExperienceInferenceInput, news_per_position: List[List[str]]) -> str:
     education_info = []
     for edu in input_data.educations or []:
         school = edu.schoolName or ""
@@ -42,11 +42,11 @@ def generate_fixed_tags_prompt(input_data: InferenceInput, news_per_position: Li
         position_news_blocks.append(block)
 
     prompt = f"""
-{TEMPLATE_TAG_INFERENCE_HEADER}
+{TEMPLATE_EXPERIENCE_HEADER}
 
-{TEMPLATE_TAG_INFERENCE_CONDITIONS}
+{TEMPLATE_EXPERIENCE_CONDITIONS}
 
-{TEMPLATE_TAG_INFERENCE_TAGS}
+{TEMPLATE_EXPERIENCE_TAGS}
 
 [인재 기본 정보]
 - 한 줄 소개: {input_data.headline}
@@ -57,12 +57,12 @@ def generate_fixed_tags_prompt(input_data: InferenceInput, news_per_position: Li
 [포지션별 설명 및 관련 뉴스]
 {chr(10).join(position_news_blocks)}
 
-{TEMPLATE_TAG_INFERENCE_FORMAT_EXAMPLE}
+{TEMPLATE_EXPERIENCE_OUTPUT_FORMAT}
 """.strip()
 
     return prompt
 
-def build_news_filter_prompt(position, news_list: List[str]) -> str:
+def build_news_filter_prompt(position: Position, news_list: List[str]) -> str:
     joined_titles = "\n".join(f"- {t}" for t in news_list)
     period = f"{position.startEndDate.start.year}–{position.startEndDate.end.year if position.startEndDate.end else '현재'}"
 
@@ -77,5 +77,5 @@ def build_news_filter_prompt(position, news_list: List[str]) -> str:
 
 {TEMPLATE_NEWS_FILTER_CONDITIONS}
 
-{TEMPLATE_NEWS_FILTER_EXAMPLE}
+{TEMPLATE_NEWS_FILTER_OUTPUT_FORMAT}
 """.strip()

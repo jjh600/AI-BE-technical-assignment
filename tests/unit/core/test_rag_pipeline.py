@@ -2,45 +2,15 @@ import pytest
 from unittest.mock import patch
 
 from app.core.rag_pipeline import (
-    generate_tag_inference_prompt,
     filter_news_for_position,
-    process_inference_pipeline,
+    run_experience_pipeline,
 )
-from app.schemas.rag import (
-    InferenceInput,
+from app.schemas.inference import (
+    ExperienceInferenceInput,
     Position,
     StartEndDate,
     PositionDate,
 )
-
-def test_generate_tag_inference_prompt_generates_valid_prompt():
-    input_data = InferenceInput(
-        firstName="민준",
-        lastName="김",
-        summary="대기업과 스타트업 경험 보유",
-        skills=["Python", "Kubernetes"],
-        positions=[
-            Position(
-                title="백엔드 개발자",
-                companyName="카카오",
-                startEndDate=StartEndDate(
-                    start=PositionDate(year=2021, month=6),
-                    end=PositionDate(year=2023, month=4)
-                ),
-                description="백엔드 시스템 개발",
-                companyLocation="판교"
-            )
-        ],
-        educations=[]
-    )
-
-    all_news = [["카카오, AI 사업에 1000억 투자", "카카오, 개발자 채용 확대"]]
-
-    prompt = generate_tag_inference_prompt(input_data, all_news)
-
-    assert "대기업과 스타트업 경험 보유" in prompt
-    assert "카카오" in prompt
-    assert "AI 사업" in prompt
 
 @patch("app.core.rag_pipeline.filter_relevant_news_from_prompt")
 @patch("app.core.rag_pipeline.build_news_filter_prompt")
@@ -76,7 +46,7 @@ def test_filter_news_for_position_returns_filtered_news(
     mock_filter_news.assert_called_once_with("뉴스 필터 프롬프트")
 
 @patch("app.core.rag_pipeline.run_experience_inference")
-@patch("app.core.rag_pipeline.generate_tag_inference_prompt")
+@patch("app.core.rag_pipeline.build_experience_tag_prompt")
 @patch("app.core.rag_pipeline.prepare_all_filtered_news")
 def test_process_inference_pipeline_returns_output(
     mock_prepare_news, mock_generate_prompt, mock_run_inference
@@ -87,7 +57,7 @@ def test_process_inference_pipeline_returns_output(
     mock_run_inference.return_value = ["대기업 경험", "리더십"]
 
     # 2. 입력값 생성
-    input_data = InferenceInput(
+    input_data = ExperienceInferenceInput(
         firstName="지훈",
         lastName="박",
         positions=[
@@ -105,7 +75,7 @@ def test_process_inference_pipeline_returns_output(
     )
 
     # 3. 실행
-    result = process_inference_pipeline(input_data)
+    result = run_experience_pipeline(input_data)
 
     # 4. 검증
     assert result.experiences == ["대기업 경험", "리더십"]

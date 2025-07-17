@@ -1,12 +1,12 @@
-from app.schemas.rag import InferenceInput, Position, StartEndDate, PositionDate
+from app.schemas.inference import ExperienceInferenceInput, Position, StartEndDate, PositionDate
 from app.services.llm.prompt_builder import (
-    generate_fixed_tags_prompt,
+    build_experience_tag_prompt,
     build_news_filter_prompt,
 )
 
 
-def test_generate_fixed_tags_prompt_minimal():
-    input_data = InferenceInput(
+def test_build_experience_tag_prompt_minimal():
+    input_data = ExperienceInferenceInput(
         firstName="지훈",
         lastName="박",
         summary="테스트 요약",
@@ -28,7 +28,7 @@ def test_generate_fixed_tags_prompt_minimal():
 
     news = [["카카오, 백엔드 개발자 대규모 채용"]]
 
-    prompt = generate_fixed_tags_prompt(input_data, news)
+    prompt = build_experience_tag_prompt(input_data, news)
 
     assert "카카오" in prompt
     assert "서버 개발" in prompt

@@ -2,9 +2,15 @@ from datetime import datetime
 from typing import Tuple
 from calendar import monthrange
 
-def parse_position_dates(position) -> Tuple[str, str]:
-    start = f"{position.startEndDate.start.year}-{position.startEndDate.start.month:02}-01"
+from app.constants import DEFAULT_POSITION_DESCRIPTION
+from app.schemas.inference import Position
 
+
+def parse_position_dates(position: Position) -> Tuple[str, str]:
+    """
+    포지션의 시작일과 종료일을 YYYY-MM-DD 형식으로 반환
+    """
+    start = f"{position.startEndDate.start.year}-{position.startEndDate.start.month:02}-01"
     if position.startEndDate.end:
         year = position.startEndDate.end.year
         month = position.startEndDate.end.month
@@ -12,13 +18,18 @@ def parse_position_dates(position) -> Tuple[str, str]:
         end = f"{year}-{month:02}-{last_day}"
     else:
         end = datetime.today().strftime("%Y-%m-%d")
-
     return start, end
 
 def normalize_position_description(desc: str) -> str:
-    return desc.strip().replace("\n", ", ") if desc else "설명 없음"
+    """
+    포지션 설명 문자열을 정제 (줄바꿈 제거, 공백 처리)
+    """
+    return desc.strip().replace("\n", ", ") if desc else DEFAULT_POSITION_DESCRIPTION
 
-def build_embedding_text(position) -> str:
+def build_embedding_text(position: Position) -> str:
+    """
+    포지션 정보를 기반으로 임베딩에 사용할 텍스트를 생성
+    """
     start_year = position.startEndDate.start.year
     end_year = position.startEndDate.end.year if position.startEndDate.end else datetime.today().year
     period = f"{start_year}–{end_year}"

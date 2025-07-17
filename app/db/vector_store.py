@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 
 from app.constants import MAX_TOP_K, DISTANCE_METRICS, DEFAULT_DISTANCE_METRIC, FILTER_THRESHOLD_SCORE
 from app.db.database import get_db_connection
@@ -7,7 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def build_similarity_query_parts(embedding_column: str, metric: str = DEFAULT_DISTANCE_METRIC):
+def build_similarity_query_parts(embedding_column: str, metric: str = DEFAULT_DISTANCE_METRIC) -> Tuple[str, str]:
     if metric not in DISTANCE_METRICS:
         logger.warning(f"[Metric 오류] 지원하지 않는 메트릭: {metric}")
         raise ValueError(f"Unsupported metric: {metric}")
@@ -21,12 +21,25 @@ def retrieve_similar_rows(
     table: str,
     embedding_column: str,
     query_embedding: List[float],
-    id_column: str = "id",
     filters: Optional[Dict[str, Any]] = None,
+    id_column: str = "id",
     top_k: int = MAX_TOP_K,
     distance_metric: str = DEFAULT_DISTANCE_METRIC,
     similarity_threshold: float = FILTER_THRESHOLD_SCORE,
-):
+) -> List[Tuple]:
+    """
+    지정된 테이블에서 임베딩 벡터와 유사한 row들을 거리 기반으로 검색합니다.
+
+    Args:
+        table (str): 검색 대상 테이블
+        embedding_column (str): 벡터가 저장된 컬럼명
+        query_embedding (List[float]): 검색 기준 벡터
+        filters (dict, optional): WHERE 조건으로 사용할 필터들
+        ...
+
+    Returns:
+        List[Tuple]: (id, title, similarity score) 리스트
+    """
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:

@@ -36,7 +36,7 @@ class Education(BaseModel):
     originStartEndDate: Optional[EducationDateRange] = None
 
 
-class InferenceInput(BaseModel):
+class ExperienceInferenceInput(BaseModel):
     firstName: Optional[str] = None
     lastName: Optional[str] = None
     headline: Optional[str] = None
@@ -52,5 +52,5 @@ class InferenceInput(BaseModel):
     educations: Optional[List[Education]] = None
 
 
-class InferenceOutput(BaseModel):
+class ExperienceInferenceOutput(BaseModel):
     experiences: List[str]

@@ -17,23 +17,25 @@ TEMPLATE_SYSTEM_PROMPT_NEWS_FILTER = """
 # 🧾 USER PROMPT 구성 요소 – 태그 추론용
 # ---------------------------------------------
 
-TEMPLATE_TAG_INFERENCE_HEADER = """
+
+TEMPLATE_EXPERIENCE_HEADER = """
 아래는 한 인재의 학력, 기술 스택, 포지션 이력, 그리고 재직 시점의 뉴스 요약입니다.  
 이 정보를 바탕으로, 해당 인재가 다음의 경험 키워드 중 어떤 것을 갖고 있는지 판단해 주세요.  
 해당된다고 판단되는 키워드만 한 줄씩 출력하세요. 각 키워드 옆 괄호 안에 핵심 근거를 간결히 작성하세요. 
 """.strip()
 
-TEMPLATE_TAG_INFERENCE_CONDITIONS = """
+
+TEMPLATE_EXPERIENCE_CONDITIONS = """
 📌 조건:
 - 중복되는 태그는 하나만 유지하고, 더 강력한 근거가 있는 경우 그 근거만 남겨 주세요.
-- 동일한 키워드라도 서로 다른 기업/시점의 사실이라면 모두 포함해 주세요.
-  예: 'IPO 경험 (밀리의서재 KOSDAQ 상장)' vs '성장기 스타트업 경험 (밀리의서재 IPO 성공)' → IPO 경험만 출력
+- 동일한 키워드라도 서로 다른 기업/시점의 사실이라면 하나의 태그에 모두 포함 해주세요.
 - 뉴스에 기반한 경우에는 "뉴스 기반" 같은 표현 대신, 뉴스 제목에 포함된 구체적 사실을 괄호 안에 요약해 주세요.
 - 뉴스 제목에 키워드가 포함됐다고 해서 관련 있다고 간주하지 마세요. 실제 재직 기업에 대한 뉴스인지 구분해 주세요.
 - 포지션 설명이 부족하거나 뉴스가 부족해도, 회사명과 직무명 등을 통해 기업의 규모를 유추해 판단해 주세요.
 """.strip()
 
-TEMPLATE_TAG_INFERENCE_TAGS = """
+
+TEMPLATE_EXPERIENCE_TAGS = """
 [정의된 경험 키워드]
 - 상위권대학교: 서울대, 연세대, 고려대 등 최상위권 대학 학사 이상의 학력
 - 대규모 회사 경험: 직원 수 수천 명 이상의 대기업에서의 재직 경험
@@ -45,7 +47,8 @@ TEMPLATE_TAG_INFERENCE_TAGS = """
 - 투자 유치 경험: Series A~F 등 외부 투자 유치 관련 조직에서 재직하거나 주도적 역할
 """.strip()
 
-TEMPLATE_TAG_INFERENCE_FORMAT_EXAMPLE = """
+
+TEMPLATE_EXPERIENCE_OUTPUT_FORMAT = """
 📌 최종 출력 형식 (예시):
 상위권대학교 (연세대학교)  
 리더쉽 (Tech Lead, 팀 리드, 챕터 리드 경력 기반)  
@@ -68,7 +71,8 @@ TEMPLATE_NEWS_FILTER_CONDITIONS = """
 - 중복되는 뉴스는 제거하고 뉴스가 없으면 빈 값을 반환해주세요.
 """.strip()
 
-TEMPLATE_NEWS_FILTER_EXAMPLE = """
+
+TEMPLATE_NEWS_FILTER_OUTPUT_FORMAT = """
 📌 최종 출력 형식 (예시):
 - 엘박스, 20억 원 추가 투자유치…200억 원 규모로 시리즈 B 클로징
 - 2023년, 리걸테크 기업 엘박스가 경찰청과 업무협약 체결
